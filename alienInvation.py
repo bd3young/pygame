@@ -87,6 +87,9 @@ class AlienInvasion:
             self.settings.initializeDynamicSettings()
             self.stats.resetStats()
             self.stats.gameActive = True
+            self.sb.prepScore()
+            self.sb.prepLevel()
+            self.sb.prepShips()
 
             #get rid of any rmaining aliens and bullets
             self.aliens.empty()
@@ -104,6 +107,7 @@ class AlienInvasion:
         if self.stats.shipsLeft > 0:
             # Decrement ships_left.
             self.stats.shipsLeft -= 1
+            self.sb.prepShips()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
@@ -192,8 +196,6 @@ class AlienInvasion:
         # Update bullet positions.
         self.bullets.update()     
 
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
-
         # Get rid of bullets that have disappeared.
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
@@ -201,16 +203,24 @@ class AlienInvasion:
 
         self.checkBulletAlienCollisions()
 
-
-
     def checkBulletAlienCollisions(self):
         collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
-        
+
+        if collisions:
+            for aliens in collisions.values():
+                self.stats.score += self.settings.alienPoints * len(aliens)
+            self.sb.prepScore()
+            self.sb.checkHighScore()
+
         if not self.aliens:
             #destroy exisiting bullets and create new fleet
             self.bullets.empty()
             self.createFleet()
             self.settings.increaseSpeed()
+
+            # Increase level
+            self.stats.level += 1
+            self.sb.prepLevel()
 
     def updateScreen(self):
         """Update images on the screen, and flip to the new screen."""

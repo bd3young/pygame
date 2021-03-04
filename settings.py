@@ -5,7 +5,7 @@ class Settings:
         # Screen settings
         self.screenWidth = 1200
         self.screenHeight = 800
-        self.bgColor = (0, 230, 0)
+        self.bgColor = (230, 230, 230)
 
         # Ship settings
         self.shipSpeed = 1.5
@@ -20,11 +20,14 @@ class Settings:
 
         #alien settings
         self.alienSpeed = 1.0
-        self.fleetDropSpeed = 10
+        self.fleetDropSpeed = 100
         self.fleetDirection = 1
 
         # how quickly the game speeds up
         self.speedUpScale = 1.1
+
+        # how quickly the alien points increase
+        self.scorScale = 1.5
 
         self.initializeDynamicSettings()
 
@@ -41,7 +44,8 @@ class Settings:
         self.fleetDirection = 1
 
     def increaseSpeed(self):
-        """Increase speed settings."""
+        """Increase speed settings and alien point values"""
         self.shipSpeed *= self.speedUpScale
         self.bulletSpeed *= self.speedUpScale
         self.alienSpeed *= self.speedUpScale
+        self.alienPoints = int(self.alienPoints * self.scorScale)

@@ -20,7 +20,7 @@ class Settings:
 
         #alien settings
         self.alienSpeed = 1.0
-        self.fleetDropSpeed = 100
+        self.fleetDropSpeed = 10
         self.fleetDirection = 1
 
         # how quickly the game speeds up

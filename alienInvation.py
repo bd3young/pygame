@@ -3,7 +3,7 @@ import pygame
 from time import sleep
 from settings import Settings
 from gameStats import GameStats
-from ship import Ship
+from jet import Jet
 from bullet import Bullet
 from alien import Alien
 from button import Button
@@ -26,7 +26,7 @@ class AlienInvasion:
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
 
-        self.ship = Ship(self)
+        self.jet = Jet(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
 
@@ -44,7 +44,7 @@ class AlienInvasion:
             self.checkEvents()
 
             if self.stats.gameActive:
-                self.ship.update()
+                self.jet.update()
                 self.updateBullets()
                 self.updateAliens()
 
@@ -65,9 +65,9 @@ class AlienInvasion:
 
     def checkKeyDownEvents(self, event):
         if event.key == pygame.K_RIGHT:
-            self.ship.movingRight = True
+            self.jet.movingRight = True
         elif event.key == pygame.K_LEFT:
-            self.ship.movingLeft = True
+            self.jet.movingLeft = True
         elif event.key == pygame.K_q or event.key == pygame.K_ESCAPE:
             sys.exit()
         elif event.key == pygame.K_SPACE:
@@ -75,9 +75,9 @@ class AlienInvasion:
 
     def checkKeyUpEvents(self, event):
         if event.key == pygame.K_RIGHT:
-            self.ship.movingRight = False 
+            self.jet.movingRight = False 
         elif event.key == pygame.K_LEFT:
-            self.ship.movingLeft = False
+            self.jet.movingLeft = False
 
     def checkPlayButton(self, mousePos):
         """Start a new game when the player clicks Play."""
@@ -89,33 +89,33 @@ class AlienInvasion:
             self.stats.gameActive = True
             self.sb.prepScore()
             self.sb.prepLevel()
-            self.sb.prepShips()
+            self.sb.prepJets()
 
             #get rid of any rmaining aliens and bullets
             self.aliens.empty()
             self.bullets.empty()
 
-            #creat new fleet and center ship
+            #creat new fleet and center jet
             self.createFleet()
-            self.ship.centerShip()
+            self.jet.centerShip()
 
             # hide mouse cursor
             pygame.mouse.set_visible(False)
 
-    def shipHit(self):
-        """Respond to the ship being hit by an alien."""
+    def jetHit(self):
+        """Respond to the jet being hit by an alien."""
         if self.stats.shipsLeft > 0:
-            # Decrement ships_left.
+            # Decrement jets_left.
             self.stats.shipsLeft -= 1
-            self.sb.prepShips()
+            self.sb.prepJets() 
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
             self.bullets.empty()
 
-            # Create a new fleet and center the ship.
+            # Create a new fleet and center the jet.
             self.createFleet()
-            self.ship.centerShip()
+            self.jet.centerShip()
 
             # Pause.
             sleep(0.5)
@@ -134,7 +134,7 @@ class AlienInvasion:
         numberAliensX = availableSpaceX // (2 * alienWidth)
 
         # Determine the number of alien rows
-        shipHeight = self.ship.rect.height
+        shipHeight = self.jet.rect.height
         availableSpaceY = (self.settings.screenHeight - (3 * alienHeight) - shipHeight)
         numberRows = availableSpaceY // (2 * alienHeight)
 
@@ -156,9 +156,9 @@ class AlienInvasion:
         self.checkFleetEdges()
         self.aliens.update()
 
-        # look for alien and ship collision
-        if pygame.sprite.spritecollideany(self.ship, self.aliens):
-            self.shipHit()
+        # look for alien and jet collision
+        if pygame.sprite.spritecollideany(self.jet, self.aliens):
+            self.jetHit()
 
         # look for aliens hitting bottom
         self.checkAliensBottom()
@@ -181,8 +181,8 @@ class AlienInvasion:
         screen_rect = self.screen.get_rect()
         for alien in self.aliens.sprites():
             if alien.rect.bottom >= screen_rect.bottom:
-                # Treat this the same as if the ship got hit.
-                self.shipHit()
+                # Treat this the same as if the jet got hit.
+                self.jetHit()
                 break
 
     def fireBullet(self):
@@ -224,8 +224,8 @@ class AlienInvasion:
 
     def updateScreen(self):
         """Update images on the screen, and flip to the new screen."""
-        self.screen.fill(self.settings.bgColor)
-        self.ship.blitme()
+        self.screen.blit(self.settings.bg, (0,0))
+        self.jet.blitme()
 
         for bullet in self.bullets.sprites():
             bullet.drawBullet()

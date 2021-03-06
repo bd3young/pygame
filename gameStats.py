@@ -1,5 +1,5 @@
 class GameStats:
-    """Track statistics for Alien Invasion."""
+    """Track statistics for Jet Fighter."""
     def __init__(self, ai_game):
         """Initialize statistics."""
         self.settings = ai_game.settings
@@ -9,6 +9,6 @@ class GameStats:
 
     def resetStats(self):
         """Initialize statistics that can change during the game."""
-        self.shipsLeft = self.settings.shipLimit
+        self.jetsLeft = self.settings.jetLimit
         self.score = 0
         self.level = 1

@@ -58,9 +58,9 @@ class Scoreboard:
     def prepJets(self):
         """Show how many jets are left."""
         self.jets = Group()
-        for shipNumber in range(self.stats.shipsLeft):
+        for jetNumber in range(self.stats.jetsLeft):
             jet = Jet(self.aiGame)
-            jet.rect.x = 10 + shipNumber * jet.rect.width
+            jet.rect.x = 10 + jetNumber * jet.rect.width
             jet.rect.y = 10
             self.jets.add(jet)
 

@@ -5,12 +5,12 @@ from settings import Settings
 from gameStats import GameStats
 from jet import Jet
 from bullet import Bullet
-from alien import Alien
+from plane import Plane
 from button import Button
 from scoreboard import Scoreboard
 
 
-class AlienInvasion:
+class JetFighter:
     """Overall class to manage game assets and behavior."""
     def __init__(self):
         """Initialize the game, and create game resources."""
@@ -20,7 +20,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((0, 0), pygame.FULLSCREEN)
         self.settings.screen_width = self.screen.get_rect().width
         self.settings.screen_height = self.screen.get_rect().height
-        pygame.display.set_caption("Alien Invasion")
+        pygame.display.set_caption("Jet Fighter")
 
         # creat an instance to store game stats
         self.stats = GameStats(self)
@@ -28,7 +28,7 @@ class AlienInvasion:
 
         self.jet = Jet(self)
         self.bullets = pygame.sprite.Group()
-        self.aliens = pygame.sprite.Group()
+        self.planes = pygame.sprite.Group()
 
         self.createFleet()
 
@@ -46,7 +46,7 @@ class AlienInvasion:
             if self.stats.gameActive:
                 self.jet.update()
                 self.updateBullets()
-                self.updateAliens()
+                self.updatePlanes()
 
             self.updateScreen()
 
@@ -91,31 +91,31 @@ class AlienInvasion:
             self.sb.prepLevel()
             self.sb.prepJets()
 
-            #get rid of any rmaining aliens and bullets
-            self.aliens.empty()
+            #get rid of any rmaining planes and bullets
+            self.planes.empty()
             self.bullets.empty()
 
             #creat new fleet and center jet
             self.createFleet()
-            self.jet.centerShip()
+            self.jet.centerJet()
 
             # hide mouse cursor
             pygame.mouse.set_visible(False)
 
     def jetHit(self):
-        """Respond to the jet being hit by an alien."""
-        if self.stats.shipsLeft > 0:
+        """Respond to the jet being hit by an plane."""
+        if self.stats.jetsLeft > 0:
             # Decrement jets_left.
-            self.stats.shipsLeft -= 1
+            self.stats.jetsLeft -= 1
             self.sb.prepJets() 
 
-            # Get rid of any remaining aliens and bullets.
-            self.aliens.empty()
+            # Get rid of any remaining planes and bullets.
+            self.planes.empty()
             self.bullets.empty()
 
             # Create a new fleet and center the jet.
-            self.createFleet()
-            self.jet.centerShip()
+            self.createFleet() 
+            self.jet.centerJet()
 
             # Pause.
             sleep(0.5)
@@ -125,62 +125,62 @@ class AlienInvasion:
         
 
     def createFleet(self):
-        """Create the fleet of aliens."""
-        # Create an alien and find the number of aliens in a row.
-        # Spacing between each alien is equal to one alien width.
-        alien = Alien(self)
-        alienWidth, alienHeight = alien.rect.size
-        availableSpaceX = self.settings.screenWidth - (2 * alienWidth)
-        numberAliensX = availableSpaceX // (2 * alienWidth)
+        """Create the fleet of planes."""
+        # Create an plane and find the number of planes in a row.
+        # Spacing between each plane is equal to one plane width.
+        plane = Plane(self)
+        planeWidth, planeHeight = plane.rect.size
+        availableSpaceX = self.settings.screenWidth - (2 * planeWidth)
+        numberPlanesX = availableSpaceX // (2 * planeWidth)
 
-        # Determine the number of alien rows
-        shipHeight = self.jet.rect.height
-        availableSpaceY = (self.settings.screenHeight - (3 * alienHeight) - shipHeight)
-        numberRows = availableSpaceY // (2 * alienHeight)
+        # Determine the number of plane rows
+        jetHeight = self.jet.rect.height
+        availableSpaceY = (self.settings.screenHeight - (3 * planeHeight) - jetHeight)
+        numberRows = availableSpaceY // (2 * planeHeight)
 
-        # Create full fleet of aliens.
+        # Create full fleet of planes.
         for rowNumber in range(numberRows):
-            for alienNumber in range(numberAliensX):
-                self.createAlien(alienNumber, rowNumber)
+            for planeNumber in range(numberPlanesX):
+                self.createPlane(planeNumber, rowNumber)
 
-    def createAlien(self, alienNumber, rowNumber):
-        alien = Alien(self)
-        alienWidth, alienHeight = alien.rect.size
-        alien.x = alienWidth + 2 * alienWidth * alienNumber
-        alien.rect.x = alien.x
-        alien.rect.y = alien.rect.height + 2 * alien.rect.height * rowNumber
-        self.aliens.add(alien)
+    def createPlane(self, planeNumber, rowNumber):
+        plane = Plane(self)
+        planeWidth, planeHeight = plane.rect.size
+        plane.x = planeWidth + 2 * planeWidth * planeNumber
+        plane.rect.x = plane.x
+        plane.rect.y = plane.rect.height + 2 * plane.rect.height * rowNumber
+        self.planes.add(plane)
 
-    def updateAliens(self):
-        """ Update positon of all aliens """
+    def updatePlanes(self):
+        """ Update positon of all planes """
         self.checkFleetEdges()
-        self.aliens.update()
+        self.planes.update()
 
-        # look for alien and jet collision
-        if pygame.sprite.spritecollideany(self.jet, self.aliens):
+        # look for plane and jet collision
+        if pygame.sprite.spritecollideany(self.jet, self.planes):
             self.jetHit()
 
-        # look for aliens hitting bottom
-        self.checkAliensBottom()
+        # look for planes hitting bottom
+        self.checkPlanesBottom()
 
     def checkFleetEdges(self):
-        """Respond appropriately if any aliens have reached an edge."""
-        for alien in self.aliens.sprites():
-            if alien.checkEdges():
+        """Respond appropriately if any planes have reached an edge."""
+        for plane in self.planes.sprites():
+            if plane.checkEdges():
                 self.changeFleetDirection()
                 break
 
     def changeFleetDirection(self):
         """Drop the entire fleet and change the fleet's direction."""
-        for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.fleetDropSpeed
+        for plane in self.planes.sprites():
+            plane.rect.y += self.settings.fleetDropSpeed
         self.settings.fleetDirection *= -1
 
-    def checkAliensBottom(self):
-        """Check if any aliens have reached the bottom of the screen."""
+    def checkPlanesBottom(self):
+        """Check if any planes have reached the bottom of the screen."""
         screen_rect = self.screen.get_rect()
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= screen_rect.bottom:
+        for plane in self.planes.sprites():
+            if plane.rect.bottom >= screen_rect.bottom:
                 # Treat this the same as if the jet got hit.
                 self.jetHit()
                 break
@@ -201,18 +201,19 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
-        self.checkBulletAlienCollisions()
+        self.checkBulletPlaneCollisions()
 
-    def checkBulletAlienCollisions(self):
-        collisions = pygame.sprite.groupcollide(self.bullets, self.aliens, True, True)
+    def checkBulletPlaneCollisions(self):
+        collisions = pygame.sprite.groupcollide(self.bullets, self.planes, True, True)
 
         if collisions:
-            for aliens in collisions.values():
-                self.stats.score += self.settings.alienPoints * len(aliens)
+            for planes in collisions.values():
+                self.stats.score += self.settings.planePoints * len(planes)
             self.sb.prepScore()
             self.sb.checkHighScore()
+            pygame.mixer.music.play(1)
 
-        if not self.aliens:
+        if not self.planes:
             #destroy exisiting bullets and create new fleet
             self.bullets.empty()
             self.createFleet()
@@ -229,7 +230,7 @@ class AlienInvasion:
 
         for bullet in self.bullets.sprites():
             bullet.drawBullet()
-        self.aliens.draw(self.screen)
+        self.planes.draw(self.screen)
 
         #draw score info
         self.sb.showScore()
@@ -242,5 +243,5 @@ class AlienInvasion:
 
 if __name__ == '__main__':
     # Make a game instance, and run the game.
-    ai = AlienInvasion()
+    ai = JetFighter()
     ai.runGame()

@@ -9,7 +9,8 @@ class Plane(Sprite):
         self.settings = ai_game.settings
 
         # Load the plane image and set its rect attribute.
-        self.image = pygame.image.load('images/enemyPlane.png')
+        image = pygame.image.load('images/enemyPlane.png')
+        self.image = pygame.transform.scale(image, (70, 60))
         self.rect = self.image.get_rect()
 
         # Start each new plane near the top left of the screen.

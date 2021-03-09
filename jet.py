@@ -11,7 +11,8 @@ class Jet(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
 
         # Load the jet image and get its rect.
-        self.image = pygame.image.load('images/fighterJet.png')
+        image = pygame.image.load('images/fighterJet.png')
+        self.image = pygame.transform.scale(image, (60, 60))
         self.changeImageSize = pygame.transform.scale(self.image, (100,100) )
         self.rect = self.image.get_rect()
 

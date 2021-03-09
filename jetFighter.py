@@ -211,7 +211,7 @@ class JetFighter:
                 self.stats.score += self.settings.planePoints * len(planes)
             self.sb.prepScore()
             self.sb.checkHighScore()
-            pygame.mixer.music.play(1)
+            pygame.mixer.Sound.play(self.settings.explosion)
 
         if not self.planes:
             #destroy exisiting bullets and create new fleet

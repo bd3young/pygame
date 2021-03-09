@@ -20,7 +20,7 @@ class Settings:
         self.bulletHeight = 15
         self.bulletColor = (218, 165, 32)
         self.bulletsAllowed = 4
-        self.explosion = pygame.mixer.music.load("audio\explosion.wav")
+        self.explosion = pygame.mixer.Sound("audio\explosion.wav")
 
         #plane settings
         self.planeSpeed = 2.0
